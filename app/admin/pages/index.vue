@@ -4,14 +4,14 @@
     <!-- <h3 v-for="(product, index) in products" :key="index">
       {{ product.title }} <br/>
     </h3> -->
-    <div class="containerfluid browsing-history">
+    <div class="container-fluid browsing-history">
       <div class="row">
         <div class="col-sm-8 col-8">
           <h1 class="a-size-large a-spacing-none a-text-normal">All Products</h1>
           <div class="a-spacing-large"></div>
           <!-- Button -->
-          <a href="#" class="a-button-buy-again">Add a new product</a>
-          <a href="#" class="a-button-history margin-right-10">Add a new category</a>
+          <a href="/product" class="a-button-buy-again">Add a new product</a>
+          <a href="/category" class="a-button-history margin-right-10">Add a new category</a>
           <a href="#" class="a-button-history margin-right-10">Add a new owner</a>
           <!-- Listing Page -->
         </div>
@@ -20,7 +20,7 @@
 
     <div class="a-spacing-large"></div>
 
-    <div class="containerfluid browsing-history">
+    <div class="container-fluid browsing-history">
       <div class="row">
         <div 
         v-for="product in products" :key="product.id"

@@ -31,8 +31,8 @@ class TagViewSet(BaseRecipeAttrViewset):
     serializer_class = serializers.TagSerializer
 
 class CategoryViewSet(BaseRecipeAttrViewset):
-    # Manage ingredientss in the database
-    queryset = Category.objects.all()
+    # Manage ingredients in the database
+    queryset = Category.objects.order_by('id')
     serializer_class = serializers.CategorySerializer
 
 class ProductViewset(viewsets.ReadOnlyModelViewSet):
