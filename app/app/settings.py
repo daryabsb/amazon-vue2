@@ -53,20 +53,32 @@ AUTH_USER_MODEL = 'core.User'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
 
  # add this block below MIDDLEWARE
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:3000',   
+    'http://localhost:3000',  
 )
 
+CORS_ORIGIN_REGEX_WHITELIST = [
+    r"^https://\w+\.localhost:3000$",
+]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
 
 
 ROOT_URLCONF = 'app.urls'
