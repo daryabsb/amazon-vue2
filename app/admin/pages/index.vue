@@ -23,7 +23,7 @@
     <div class="container-fluid browsing-history">
       <div class="row">
         <div 
-        v-for="product in products" :key="product.id"
+        v-for="(product, index) in products" :key="product.id"
         class="col-xl-2 col-lg-2 col-md-3 col-sm-6 col-6 br bb">
           <div class="history-box">
             <div class="text-center">
@@ -59,7 +59,7 @@
               <!-- Product Buttons -->
               <div class="a-row">
                 <nuxt-link :to="`/myproducts/${product.id}`" class="a-button-history margin-right-10">Update</nuxt-link>
-                <nuxt-link :to="`/myproducts/${product.id}`" class="a-button-history margin-right-10">Delete</nuxt-link>
+                <a href="/" class="a-button-history margin-right-10" @click="onDeleteProduct(product.id, index)" >Delete</a>
               </div>
             </div>
           </div>
@@ -90,7 +90,25 @@ export default {
     }
     
     
+  },
+  methods: {
+    async onDeleteProduct(id, index) {
+
+    try {
+      let response = await this.$axios.$delete(
+        `/product/myproducts/${id}`);
+
+      if (response.status) {
+        this.products.splice(index, 1);
+      } 
+
+    } catch (err) {
+      console.log(err)
+    }
+    
   }
+  }
+  
 }
 </script>
 
