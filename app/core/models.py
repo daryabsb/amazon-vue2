@@ -48,6 +48,9 @@ class User(PermissionsMixin, AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
 
+    def __str__(self):
+        return self.name
+
 class Tag(models.Model):
         # Tags to be used for a rescipe
     name = models.CharField(max_length=255)
@@ -66,9 +69,6 @@ class Category(models.Model):
         on_delete=models.CASCADE
     )
 
-    def __str__(self):
-        return self.name
-
 class Product(models.Model):
     # Recipe object
     user = models.ForeignKey(
@@ -80,6 +80,8 @@ class Product(models.Model):
     tags = models.ManyToManyField('Tag')
     stock = models.IntegerField()
     price = models.DecimalField(max_digits=5, decimal_places=2)
+    date_added = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     link = models.CharField(max_length=255, blank=True)
     image = models.ImageField(null=True, upload_to=product_image_file_path)
 

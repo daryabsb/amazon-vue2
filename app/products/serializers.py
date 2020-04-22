@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from core.models import Tag, Category, Product
+from django.conf import settings
+from users.serializers import UserSerializer
+from core.models import User, Tag, Category, Product
 
 class TagSerializer(serializers.ModelSerializer):
     # Serializer for tag objects
@@ -18,15 +20,22 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     # Serialize a recipe
 
-    tags = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Tag.objects.all()
-    )
+    # tags = serializers.PrimaryKeyRelatedField(
+    #     many=True,
+    #     queryset=Tag.objects.all()
+    # )
+    tags = TagSerializer(many=True, read_only=True)
 
+    # Get name of the categories for customers
+    category = CategorySerializer(read_only=True)
+
+    # Get name of the user for customers
+    user = UserSerializer(read_only=True)
+   
     class Meta:
         model = Product
         fields = ('id', 'title', 'category', 'tags', 'stock',
-                  'price', 'link', 'image'
+                  'price', 'link', 'user', 'image'
                   )
         read_only_Fields = ('id',)
 
@@ -42,3 +51,4 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'image')
         read_only_Fields = ('id',)
+

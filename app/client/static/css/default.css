@@ -500,12 +500,12 @@ header form input{
   display: none;
 }
 
-.nav-sprite {
+.nav-sprite{
 	background-image: url("../img/globalImg.png");
 	background-position: 0 1000px;
     background-repeat: repeat-x;
 }
-.nav-global-location {
+.nav-global-location{
 	margin-top: 5px;
 }
 .nav-global-location .nav-a {
@@ -551,7 +551,7 @@ header form input{
 }
 .nav-global-location .nav-a-2 .nav-line-1,
 .nav-global-location .nav-a-2 .nav-line-2 {
-    float: left; /* float: left; */
+    float: left;
     clear: both;
     display: inline-block;
     white-space: nowrap;
@@ -1925,7 +1925,7 @@ a.kicsPopover span {
     border-color: #c59f43 #846a29 #957321;
 }
 .pr-fb-icon{
-    background: url("/img/followIcons.png") -12px -3px ;
+    background: url("../img/followIcons.png") -12px -3px ;
     width: 11px;
     height: 11px;
     position: relative;

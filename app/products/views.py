@@ -40,6 +40,9 @@ class ProductViewset(viewsets.ReadOnlyModelViewSet):
     serializer_class = serializers.ProductSerializer
     queryset = Product.objects.all()
 
+    def get_queryset(self):
+        # Retrieve the recipes to the authenticated user
+        return self.queryset.all()
 
 
 class MyProductViewset(viewsets.ModelViewSet):
