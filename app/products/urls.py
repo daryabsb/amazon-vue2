@@ -6,12 +6,25 @@ from products import views
 router = DefaultRouter()
 router.register('tags', views.TagViewSet)
 router.register('categories', views.CategoryViewSet)
-router.register('myproducts', views.MyProductViewset, base_name='myproducts')
-router.register('products', views.ProductViewset, base_name='products')
+router.register('products', views.MyProductViewset)
+router.register('reviews', views.ReviewViewset)
 
 
 app_name = 'products'
 
 urlpatterns = [
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    
+    path("products/<slug:slug>/reviews/", 
+         views.ReviewListAPIView.as_view(),
+         name="review-list"),
+
+    path("products/<slug:slug>/review/", 
+         views.ReviewCreateAPIView.as_view(),
+         name="review-create"),
+
+    path("reviews/<int:pk>/", 
+         views.ReviewRUDAPIView.as_view(),
+         name="review-detail")
+         
 ]

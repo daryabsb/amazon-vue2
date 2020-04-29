@@ -1,9 +1,12 @@
-from rest_framework import generics, authentication, permissions
+from rest_framework import generics, authentication, permissions, viewsets, mixins, status
 
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.settings import api_settings
 
-from users.serializers import UserSerializer, AuthTokenSerializer
+from users.serializers import UserSerializer, AuthTokenSerializer, AddressSerializer
+
+from core.models import Address
 
 
 class CreateUserView(generics.CreateAPIView):
@@ -26,3 +29,4 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         # Retrieve and return authenticated user
         return self.request.user
+

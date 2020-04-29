@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.conf import settings
 from users.serializers import UserSerializer
-from core.models import User, Tag, Category, Product
+from core.models import User, Tag, Category, Product, Review
 
 class TagSerializer(serializers.ModelSerializer):
     # Serializer for tag objects
@@ -17,31 +17,49 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
         read_only_fields = ('id',)
 
-class ProductSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
+    
+    user = serializers.StringRelatedField(read_only=True)
+    created_at = serializers.SerializerMethodField(read_only=True)
+       
+
+    class Meta:
+        model = Review
+        exclude = ["product","updated_at"]
+
+    def get_created_at(self, instance):
+        return instance.created_at.strftime("%B %d, %Y")
+
+class MyProductSerializer(serializers.ModelSerializer):
     # Serialize a recipe
+    
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Tag.objects.all()
+    )
 
-    # tags = serializers.PrimaryKeyRelatedField(
-    #     many=True,
-    #     queryset=Tag.objects.all()
-    # )
-    tags = TagSerializer(many=True, read_only=True)
+    reviews_count = serializers.SerializerMethodField()
 
-    # Get name of the categories for customers
-    category = CategorySerializer(read_only=True)
+    # reviews = ReviewSerializer(many=True)
 
-    # Get name of the user for customers
+    slug = serializers.SlugField(read_only=True)
+
     user = UserSerializer(read_only=True)
-   
+    
     class Meta:
         model = Product
-        fields = ('id', 'title', 'category', 'tags', 'stock',
-                  'price', 'link', 'user', 'image'
+        fields = ('id', 'title', 'description', 'category', 'tags', 'stock',
+                  'price', 'slug', 'user', 'image', 'reviews_count'
                   )
         read_only_Fields = ('id',)
 
-class ProductDetailSerializer(ProductSerializer):
-    # Serializer a recipe detail
-    tags = TagSerializer(many=True, read_only=True)
+    def get_reviews_count(self, instance):
+        return instance.reviews.count()
+
+# class ProductDetailSerializer(ProductSerializer):
+#     # Serializer a recipe detail
+#     tags = TagSerializer(many=True, read_only=True)
+#     reviews = ReviewSerializer(many=True)
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -51,4 +69,4 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'image')
         read_only_Fields = ('id',)
-
+        

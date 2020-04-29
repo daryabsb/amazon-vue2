@@ -1,21 +1,26 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from rest_framework import generics
+
+from rest_framework.exceptions import ValidationError
+
 from rest_framework import viewsets, mixins, status
 
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
-from core.models import Tag, Category, Product
-from products import serializers
+from core.models import Tag, Category, Product, Review
+from products import serializers, permissions
 
 
-class BaseRecipeAttrViewset(viewsets.GenericViewSet,
+class BaseProductAttrViewset(viewsets.GenericViewSet,
                             mixins.ListModelMixin,
                             mixins.CreateModelMixin):
     """Base viewset for user owned recipe attributes"""
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsSupplierOrReadOnly,)
 
     def get_queryset(self):
         """Return objects for the current authenticated user only"""
@@ -25,42 +30,88 @@ class BaseRecipeAttrViewset(viewsets.GenericViewSet,
         """Create a new object"""
         serializer.save(user=self.request.user)
 
-class TagViewSet(BaseRecipeAttrViewset):
+class TagViewSet(BaseProductAttrViewset):
     """Manage tags in the database"""
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
 
-class CategoryViewSet(BaseRecipeAttrViewset):
+class CategoryViewSet(BaseProductAttrViewset):
     # Manage ingredients in the database
     queryset = Category.objects.order_by('id')
     serializer_class = serializers.CategorySerializer
 
-class ProductViewset(viewsets.ReadOnlyModelViewSet):
-    # Manage recipes in the database
-    serializer_class = serializers.ProductSerializer
-    queryset = Product.objects.all()
+
+class ReviewViewset(viewsets.ModelViewSet):
+    """Base viewset for user owned recipe attributes"""
+    queryset = Review.objects.order_by('-created_at')
+    serializer_class = serializers.ReviewSerializer
+
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (permissions.IsReviewAuthorOrReadOnly,)
+
+    def perform_create(self, serializer):
+        """Create a new object"""
+        
+        serializer.save(user=self.request.user)
+
+class ReviewCreateAPIView(generics.CreateAPIView):
+    """Allow users to answer a question instance if they haven't already."""
+    queryset = Review.objects.all()
+    serializer_class = serializers.ReviewSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def perform_create(self, serializer):
+       
+        request_user = self.request.user
+        # print(request_user)
+
+        kwarg_slug = self.kwargs.get("slug")
+        product = generics.get_object_or_404(Product, slug=kwarg_slug)
+        # print(product)
+        # if product.reviews.filter(author=request_user).exists():
+        #     raise ValidationError("You have already answered this Question!")
+        serializer.save(user=request_user, product=product)
+
+
+
+class ReviewListAPIView(generics.ListAPIView):
+    """Provide the answers queryset of a specific question instance."""
+    serializer_class = serializers.ReviewSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        # Retrieve the recipes to the authenticated user
-        return self.queryset.all()
+        kwarg_slug = self.kwargs.get("slug")
+        return Review.objects.filter(product__slug=kwarg_slug).order_by("-created_at")
+
+
+class ReviewRUDAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """Provide *RUD functionality for an answer instance to it's author."""
+    queryset = Review.objects.all()
+    serializer_class = serializers.ReviewSerializer
+    permission_classes = [IsAuthenticated, permissions.IsAuthorOrReadOnly]
+
+
 
 
 class MyProductViewset(viewsets.ModelViewSet):
     # Manage recipes in the database
 
-    serializer_class = serializers.ProductSerializer
+    serializer_class = serializers.MyProductSerializer
     queryset = Product.objects.all()
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    lookup_field = "slug"
+    # permission_classes = (IsAuthenticated,)
+    permission_classes = (permissions.IsSupplierOrReadOnly,)
 
-    def get_queryset(self):
-        # Retrieve the recipes to the authenticated user
-        return self.queryset.filter(user=self.request.user)
+    # def get_queryset(self):
+    #     # Retrieve the recipes to the authenticated user
+    #     return self.queryset.filter(user=self.request.user)
 
     def get_serializer_class(self):
         # return apropriate serializer class
         if self.action == 'retrieve':
-            return serializers.ProductDetailSerializer
+            return serializers.MyProductSerializer
         elif self.action == 'upload_image':
             return serializers.ProductImageSerializer
 

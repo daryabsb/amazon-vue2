@@ -7,25 +7,30 @@ from core import models
 
 class UserAdmin(BaseUserAdmin):
     ordering = ['id']
-    list_display = ['email', 'name']
+    list_display = ['email', 'name', 'is_supplier']
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal Info'), {'fields': ('name',)}),
+        (_('Personal Info'), {'fields': ('name', 'image',)}),
         (
             _('Permissions'),
-            {'fields': ('is_active', 'is_staff', 'is_superuser')}
+            {'fields': ('is_active', 'is_staff', 'is_superuser', 'is_supplier')}
         ),
         (_('Important Dates'), {'fields': ('last_login',)})
     )
     add_fieldsets = (
         ('None', {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')
+            'fields': ('name','email', 'password1', 'password2', 'is_supplier')
         }),
     )
 
 
 admin.site.register(models.User, UserAdmin)
+admin.site.register(models.Supplier)
+admin.site.register(models.Customer)
+admin.site.register(models.MainCategory)
+admin.site.register(models.Address)
 admin.site.register(models.Tag)
 admin.site.register(models.Category)
 admin.site.register(models.Product)
+admin.site.register(models.Review)

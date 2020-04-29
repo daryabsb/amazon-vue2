@@ -34,6 +34,8 @@ MANIFEST
 *.spec
 
 # Installer logs
+Pipfile
+Pipfile.lock
 pip-log.txt
 pip-delete-this-directory.txt
 

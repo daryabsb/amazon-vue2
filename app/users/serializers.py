@@ -3,12 +3,21 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import serializers
 
+from core.models import Address
+
+from addresses.serializers import AddressSerializer
+
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the users object"""
-
+    # address = serializers.PrimaryKeyRelatedField(
+    #     many=True,
+    #     queryset=Address.objects.all()
+    # )
+    address = AddressSerializer(many=True)
     class Meta:
         model = get_user_model()
-        fields = ('email', 'password', 'name')
+        fields = ('email', 'password', 'name', 'image', 'address', 'is_supplier')
         extra_kwargs = {'password': {'write_only': True, 'min_length': 5}}
 
     def create(self, validated_data):
@@ -50,3 +59,4 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
